@@ -21,7 +21,7 @@ type
         exit 1;
       end;
 
-      var lDisk := new D64Image withFile(args[0]);
+      var lDisk := new DiskImage withFile(args[0]);
 
       if length(args) > 1 then begin
 
@@ -30,7 +30,16 @@ type
               writeLn(String.Format('0 "{0}"', lDisk.Name));
               for each f in lDisk.Files do
                 writeLn(String.Format('{0} "{1}" {2}', f.Size, f.Name, f.FileType));
-              writeLn(String.Format("{0} BLOCKS FREE ({1} BYTES)", lDisk.Directory.FreeSectors, lDisk.Directory.FreeSectors*D64Info.SectorSize));
+              writeLn(String.Format("{0} BLOCKS FREE ({1} BYTES)", lDisk.Directory.FreeSectors, lDisk.Directory.FreeSectors*lDisk.Format.SectorSize));
+            end;
+          "--files": begin
+              for i: Int32 := 0 to lDisk.Files.Count-1 do begin
+                var f := lDisk.Files[i];
+                &write(String.Format('{0}: {1} "{2}" {3}', i, f.Size, f.Name, f.FileType));
+                if f.FileType in ["PRG"] then
+                  &write(String.Format(', {0} bytes on disk', f.GetBytes.Length));
+                writeLn();
+              end;
             end;
           "--extract-file": begin
               if length(args) > 3 then begin

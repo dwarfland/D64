@@ -1,36 +1,85 @@
 ﻿namespace D64;
 
 type
-  D64Info = public class
+  DiskFormat = public abstract class
   public
-    const TrackOffsets = [-1, // Tracks are one-based
+    property FormatName: String read; abstract;
+    property MinNumberOfTracks: Int32 read; abstract;
+    property MaxNumberOfTracks: Int32 read; abstract;
+    property TrackOffsets: array of Int32 read; abstract;
+    property SectorsPerTrack: array of Byte read; abstract;
+
+    const SectorSize = $100;
+    const FileEntrySize = $20;
+
+    class method DiskFormatForExtension(aExtension: not nullable String): not nullable DiskFormat;
+    begin
+      case aExtension.ToLower of
+        ".d64": result := new D64DiskFormat;
+        ".d71": result := new D71DiskFormat;
+        else raise new Exception(String.Format("Unsupported disk format: '{0}'", aExtension));
+      end;
+    end;
+
+  end;
+
+  D64DiskFormat = public class(DiskFormat)
+  public
+    property FormatName: String read "D64"; override;
+    property MinNumberOfTracks: Int32 read 35; override;
+    property MaxNumberOfTracks: Int32 read 40; override;
+    property TrackOffsets: array of Int32 := [-1, // Tracks are one-based
                           $00000, $01500, $02A00, $03F00, $05400, $06900, $07E00, $09300, $0A800, $0BD00,
                           $0D200, $0E700, $0FC00, $11100, $12600, $13B00, $15000, $16500, $17800, $18B00,
                           $19E00, $1B100, $1C400, $1D700, $1EA00, $1FC00, $20E00, $22000, $23200, $24400,
-                          $25600, $26700, $27800, $28900, $29A00, $2AB00, $2BC00, $2CD00, $2DE00, $2EF00];
-    const SectorsPerTrack = [-1, // Tracks are one-based
+                          $25600, $26700, $27800, $28900, $29A00, $2AB00, $2BC00, $2CD00, $2DE00, $2EF00]; override;
+    property SectorsPerTrack: array of Byte := [-1, // Tracks are one-based
                              21, 21, 21, 21, 21, 21, 21, 21, 21, 21,
                              21, 21, 21, 21, 21, 21, 21, 19, 19, 19,
                              19, 19, 19, 19, 18, 18, 18, 18, 18, 18,
-                             17, 17, 17, 17, 17, 17, 17, 17, 17, 17];
-    const SectorSize = $100;
-    const FileEntrySize = $20;
+                             17, 17, 17, 17, 17, 17, 17, 17, 17, 17]; override;
   end;
 
-  D64Image = public class
+  D71DiskFormat = public class(DiskFormat)
+  public
+    property FormatName: String read "D71"; override;
+    property MinNumberOfTracks: Int32 read 70; override;
+    property MaxNumberOfTracks: Int32 read 70; override;
+    property TrackOffsets: array of Int32 := [-1, // Tracks are one-based
+                          $00000, $01500, $02A00, $03F00, $05400, $06900, $07E00, $09300, $0A800, $0BD00,
+                          $0D200, $0E700, $0FC00, $11100, $12600, $13B00, $15000, $16500, $17800, $18B00,
+                          $19E00, $1B100, $1C400, $1D700, $1EA00, $1FC00, $20E00, $22000, $23200, $24400,
+                          $25600, $26700, $27800, $28900, $29A00,
+                          $2AB00, $2C000, $2D500, $2EA00, $2FF00, $31400, $32900, $33E00, $35300, $36800,
+                          $37D00, $39200, $3A700, $3BC00, $3D100, $3E600, $3FB00, $41000, $42300, $43600,
+                          $44900, $45C00, $46F00, $48200, $49500, $4A700, $4B900, $4CB00, $4DD00, $4EF00,
+                          $50100, $51200, $52300, $53400, $54500]; override;
+    property SectorsPerTrack: array of Byte := [-1, // Tracks are one-based
+                             21, 21, 21, 21, 21, 21, 21, 21, 21, 21,
+                             21, 21, 21, 21, 21, 21, 21, 19, 19, 19,
+                             19, 19, 19, 19, 18, 18, 18, 18, 18, 18,
+                             17, 17, 17, 17, 17,
+                             21, 21, 21, 21, 21, 21, 21, 21, 21, 21,
+                             21, 21, 21, 21, 21, 21, 21, 19, 19, 19,
+                             19, 19, 19, 19, 18, 18, 18, 18, 18, 18,
+                             17, 17, 17, 17, 17]; override;
+  end;
+
+  DiskImage = public class
   private
   protected
   public
 
     constructor withFile(aFilename: not nullable String);
     begin
-      constructor withBinary(File.ReadBinary(aFilename));
+      constructor withBinary(File.ReadBinary(aFilename), DiskFormat.DiskFormatForExtension(aFilename.PathExtension));
     end;
 
-    constructor withBinary(aBinary: not nullable Binary);
+    constructor withBinary(aBinary: not nullable Binary; aFormat: DiskFormat);
     begin
       if aBinary.Length < 174848 then
         raise new Exception("File to small to be a D64 image");
+      Format := aFormat;
       Binary := aBinary;
       Directory := new D64Directory withImage(self);
     end;
@@ -40,17 +89,19 @@ type
       result := new D64Sector withImage(self) Sector(aSector) Track(aTrack);
     end;
 
+    property Format: DiskFormat read private write;
     property Binary: ImmutableBinary read private write;
     property Directory: D64Directory read private write;
     property Files: ImmutableList<D64File> read Directory.Files;
     property Name: String read Directory.Name;
+    property DisplayName: String read Directory.DisplayName;
 
   end;
 
   D64Sector = public class
   public
 
-    property Image: D64Image read private write;
+    property Image: DiskImage read private write;
     property Sector: Int32 read private write;
     property Track: Int32 read private write;
     property SectorOffset: Int32 read private write;
@@ -75,12 +126,12 @@ type
 
     method GetBytes(): ImmutableBinary; inline;
     begin
-      result := GetBytes(0, D64Info.SectorSize);
+      result := GetBytes(0, Image.Format.SectorSize);
     end;
 
     method GetBytesAsArray(): array of Byte; inline;
     begin
-      result := GetBytesAsArray(0, D64Info.SectorSize);
+      result := GetBytesAsArray(0, Image.Format.SectorSize);
     end;
 
     method GetString(aOffset: Byte; aCount: Int32): String;
@@ -89,10 +140,16 @@ type
       result := Encoding.ASCII.GetString(lArray).TrimEnd([#$a0]);
     end;
 
+    method GetUnicodeString(aOffset: Byte; aCount: Int32): String;
+    begin
+      var lArray := GetBytesAsArray(aOffset, aCount);
+      result := PETSCII.GetString(lArray).TrimEnd([#$a0]);
+    end;
+
     [ToString]
     method ToString: String;
     begin
-      result := Convert.ToHexString(Image.Binary.ToArray, SectorOffset, D64Info.SectorSize);
+      result := Convert.ToHexString(Image.Binary.ToArray, SectorOffset, Image.Format.SectorSize);
       var i := 32;
       while i < length(result) do begin
         result := result.Insert(i, Environment.LineBreak);
@@ -102,23 +159,23 @@ type
     end;
 
   unit
-   constructor withImage(aImage: D64Image) Sector(aSector: Integer) Track(aTrack: Integer);
+   constructor withImage(aImage: DiskImage) Sector(aSector: Integer) Track(aTrack: Integer);
    begin
      Image := aImage;
      Sector := aSector;
      Track := aTrack;
 
-     if (aTrack < 1) or (aTrack > length(D64Info.TrackOffsets)) then
+     if (aTrack < 1) or (aTrack > length(Image.Format.TrackOffsets)) then
        raise new Exception(String.Format("Invalid track number {0}", aTrack));
 
-     var lTrackOffset := D64Info.TrackOffsets[aTrack];
+     var lTrackOffset := Image.Format.TrackOffsets[aTrack];
      if lTrackOffset > Image.Binary.Length then
        raise new Exception(String.Format("Image too small to contain track {0}", aTrack));
-     if (aSector < 0) or (aSector >= D64Info.SectorsPerTrack[aTrack]) then
+     if (aSector < 0) or (aSector >= Image.Format.SectorsPerTrack[aTrack]) then
        raise new Exception(String.Format("Invalid sector number {0} for track {1}", aSector, aTrack));
 
-     SectorOffset := lTrackOffset+aSector*D64Info.SectorSize;
-     if SectorOffset+D64Info.SectorSize > Image.Binary.Length then
+     SectorOffset := lTrackOffset+aSector*Image.Format.SectorSize;
+     if SectorOffset+Image.Format.SectorSize > Image.Binary.Length then
        raise new Exception(String.Format("Image too small to contain sector {0} on track {1}", aSector, aTrack));
    end;
 
@@ -135,11 +192,12 @@ type
   D64Directory = public class
   public
 
-    property Image: D64Image read private write;
+    property Image: DiskImage read private write;
     property BAMSector: D64Sector read private write;
     property BAM: ImmutableBinary read private write;
     property DiskVersion: Byte read BAMSector[2];
     property Name: String read private write;
+    property DisplayName: String read private write;
     property FreeSectors: Int32 read private write;
     property TotalSectors: Int32 read private write;
     property Files: ImmutableList<D64File> read private write;
@@ -151,19 +209,20 @@ type
       result := result+String.Format("Name: '{0}'", Name)+Environment.LineBreak;
       result := result+String.Format("Disk Version: ${0}", Convert.ToHexString(DiskVersion))+Environment.LineBreak;
       result := result+String.Format("Free Sectors: {0} of {1}", FreeSectors, TotalSectors)+Environment.LineBreak;
-      result := result+String.Format("Free Bytes: {0} of {1}", FreeSectors*D64Info.SectorSize, TotalSectors*D64Info.SectorSize)+Environment.LineBreak;
+      result := result+String.Format("Free Bytes: {0} of {1}", FreeSectors*Image.Format.SectorSize, TotalSectors*Image.Format.SectorSize)+Environment.LineBreak;
       for each f in Files do
         result := result+String.Format("'{0}' {1}, {2}", f.Name, f.FileType, f.Size)+Environment.LineBreak;
     end;
 
   unit
 
-    constructor withImage(aImage: D64Image);
+    constructor withImage(aImage: DiskImage);
     begin
       Image := aImage;
       BAMSector := Image.GetSector(0) Track(18);
 
       Name := BAMSector.GetString($90, $10);
+      DisplayName := BAMSector.GetUnicodeString($90, $10);
 
       BAM := BAMSector.GetBytes($04, $8f-$04);
       var lBAMBytes := BAM.ToArray;
@@ -172,9 +231,9 @@ type
       for t: Byte := 1 to 35 do begin
         if t ≠ 18 then begin
           var lOffset := (t-1)*4;
-          //writeLn(String.Format("{0} of {1} Free", BAM[lOffset], D64Info.SectorsPerTrack[t]));
+          //writeLn(String.Format("{0} of {1} Free", BAM[lOffset], Image.Format.SectorsPerTrack[t]));
           inc(lFree, lBAMBytes[lOffset]);
-          inc(lTotal, D64Info.SectorsPerTrack[t]);
+          inc(lTotal, Image.Format.SectorsPerTrack[t]);
         end;
       end;
       FreeSectors := lFree;
@@ -192,7 +251,7 @@ type
         lNextSector := lBytes[$01];
         for f: Int32 := 0 to 7 do begin
 
-          var lOffset := f*D64Info.FileEntrySize;
+          var lOffset := f*Image.Format.FileEntrySize;
           if lBytes[lOffset+$01] = $ff then
             break;
           var lFileType := lBytes[lOffset+$02];
@@ -210,10 +269,11 @@ type
   D64File = public class
   public
 
-    property Image: D64Image read private write;
+    property Image: DiskImage read private write;
     property FileTypeCode: Byte read private write;
     property FileType: String read private write;
     property Name: String read private write;
+    property DisplayName: String read private write;
     property Size: Int32 read private write;
     property StartTrack: Byte read private write;
     property StartSector: Byte read private write;
@@ -253,14 +313,14 @@ type
 
   unit
 
-    constructor withImage(aImage: D64Image) Sector(aSector: D64Sector) &Index(aIndex: Byte);
+    constructor withImage(aImage: DiskImage) Sector(aSector: D64Sector) &Index(aIndex: Byte);
     begin
       if (aIndex < 0) or (aIndex > 7) then
         raise new Exception(String.Format("Invalid fine Index: {0}", aIndex));
 
       Image := aImage;
-      var lOffset := aIndex*D64Info.FileEntrySize;
-      var lBytes := aSector.GetBytesAsArray(lOffset, D64Info.FileEntrySize);
+      var lOffset := aIndex*Image.Format.FileEntrySize;
+      var lBytes := aSector.GetBytesAsArray(lOffset, Image.Format.FileEntrySize);
       FileTypeCode := lBytes[$02];
       if FileTypeCode ≠ 0 then begin
         FileType := case (FileTypeCode and $07) of
@@ -275,6 +335,7 @@ type
         StartTrack := lBytes[$03];
         StartSector := lBytes[$04];
         Name := aSector.GetString(lOffset+$05, $10);
+        DisplayName := aSector.GetUnicodeString(lOffset+$05, $10);
         Size := Int32(lBytes[$1e])+Int32(lBytes[$1f])*$100;
 
         SideTrack := lBytes[$15];
