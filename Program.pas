@@ -38,6 +38,8 @@ type
                 &write(String.Format('{0}: {1} "{2}" {3}', i, f.Size, f.Name, f.FileType));
                 if f.FileType in ["PRG"] then
                   &write(String.Format(', {0} bytes on disk', f.GetBytes.Length));
+                if f.LoadAddress ≠ $0801 then
+                  &write(String.Format(', loads to ${0}', Convert.ToHexString(f.LoadAddress, 4)));
                 writeLn();
               end;
             end;

@@ -281,6 +281,7 @@ type
     property StartSector: Byte read private write;
     property &Locked: Byte read private write;
     property Closed: Byte read private write;
+    property LoadAddress: Int32 read get_LoadAddress;
 
     property SideTrack: Byte read private write;
     property SideSector: Byte read private write;
@@ -301,7 +302,9 @@ type
         lNextTrack := lBytes[$00];
         lNextSector := lBytes[$01];
 
-        if lNextTrack ≠ 0 then
+        if lResult.Length = 0 then
+          lResult.Write(lBytes, $04, $100-$04) // skip the load address
+        else if lNextTrack ≠ 0 then
           lResult.Write(lBytes, $02, $100-$02)
         else if lNextSector ≤ $100-$02 then
           lResult.Write(lBytes, $02, lNextSector)
@@ -349,6 +352,16 @@ type
         //writeLn(String.Format("'{0}' {1}, {2}", Name, FileTypeCode, Size));
       end;
     end;
+
+  private
+
+    method get_LoadAddress: Int32;
+    begin
+      var lSector := Image.GetSector(StartSector) Track(StartTrack);
+      var lBytes := lSector.GetBytesAsArray();
+      result := lBytes[$02]+lBytes[$03]*$100;
+    end;
+
   end;
 
 end.
