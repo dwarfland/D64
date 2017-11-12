@@ -8,6 +8,8 @@ type
       result := ViewerRole.CanHandle;
     end;
 
+    property Name: not nullable String read "Binary"; override;
+
   protected
     method GetTextForFile(aFile: not nullable D64File): not nullable String; override;
     begin

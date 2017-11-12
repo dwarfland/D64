@@ -35,6 +35,7 @@ type
 
       Files := Folder.GetFiles("/Users/mh/Dropbox/C64", true).Select(f -> f as String).Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
       DiskImagesTableView.reloadData();
+      UpdateViewerMenu();
     end;
 
     [IBOutlet] property DiskImagesTableView: NSTableView;
@@ -183,6 +184,16 @@ type
     //method tableViewColumnDidMove(notification: not nullable NSNotification);
     //method tableViewColumnDidResize(notification: not nullable NSNotification);
     //method tableViewSelectionIsChanging(notification: not nullable NSNotification);
+
+    method UpdateViewerMenu;
+    begin
+      ViewersPopup.removeAllItems;
+      for each v in Viewers.OrderBy(v -> v.Name) do begin
+        var m := new NSMenuItem withTitle(v.Name) action(nil) keyEquivalent("");
+        m.representedObject := v;
+        ViewersPopup.menu.addItem(m);
+      end;
+    end;
 
     method ShowFile(aFile: D64File) inViewer(aViewer: Viewer);
     begin

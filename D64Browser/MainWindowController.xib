@@ -11,6 +11,7 @@
                 <outlet property="ContentsTableView" destination="fTc-1K-B5U" id="V33-v5-IPK"/>
                 <outlet property="DiskImagesTableView" destination="iJe-km-v6W" id="A8Z-ax-yst"/>
                 <outlet property="ViewerPlaceholderView" destination="Phe-u2-CzW" id="0Vq-sA-c6x"/>
+                <outlet property="ViewersPopup" destination="OCK-0g-IfD" id="mhu-pj-nS7"/>
                 <outlet property="window" destination="5" id="13"/>
             </connections>
         </customObject>
@@ -146,12 +147,30 @@
                     <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="utC-xS-iaH"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="Adl-Qy-K5M"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="l75-JN-Ssp"/>
+                    <toolbarItem implicitItemIdentifier="3EA13F37-9C63-4BE0-9141-B1A77799F2A8" label="Viewer" paletteLabel="Viewer" id="Rhk-jq-Pon">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="100" height="28"/>
+                        <size key="maxSize" width="200" height="28"/>
+                        <popUpButton key="view" verticalHuggingPriority="750" id="OCK-0g-IfD">
+                            <rect key="frame" x="0.0" y="14" width="200" height="28"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="wsz-cQ-g7S" id="F2S-xo-Wxh">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="menu"/>
+                                <menu key="menu" id="EsS-IB-oz6">
+                                    <items>
+                                        <menuItem title="Item 1" state="on" id="wsz-cQ-g7S"/>
+                                        <menuItem title="Item 2" id="46i-Q9-Iww"/>
+                                        <menuItem title="Item 3" id="KlN-uf-AAN"/>
+                                    </items>
+                                </menu>
+                            </popUpButtonCell>
+                        </popUpButton>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
-                    <toolbarItem reference="ebC-xg-10O"/>
-                    <toolbarItem reference="pYY-Hc-Z0R"/>
                     <toolbarItem reference="l75-JN-Ssp"/>
-                    <toolbarItem reference="utC-xS-iaH"/>
+                    <toolbarItem reference="Rhk-jq-Pon"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>

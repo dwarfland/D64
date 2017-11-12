@@ -7,6 +7,7 @@ type
   public
     method GetViewForFile(aFile: not nullable D64File): not nullable NSView; abstract;
     method CanHandleFile(aFile: not nullable D64File): ViewerRole; abstract;
+    property Name: not nullable String read; abstract;
   end;
 
   TextBasedViewer = public abstract class(Viewer)

@@ -3,10 +3,13 @@
 type
   DisassemblyViewer = public class(TextBasedViewer)
   public
+
     method CanHandleFile(aFile: not nullable D64File): ViewerRole; override;
     begin
       result := ViewerRole.CanHandle;
     end;
+
+    property Name: not nullable String read "Disassembly"; override;
 
   protected
 
@@ -278,7 +281,7 @@ type
         $86: result := "STX"+GetNextByteAsZP;
         $87: result := "SAX"+GetNextByteAsZP;
         $88: result := "DEY";
-        $89: result := "NOP"+GetNextByteAsAimm;
+        $89: result := "NOP"+GetNextByteAsImm;
         $8a: result := "TXA";
         $8b: result := "XXA"+GetNextByteAsImm;
         $8c: result := "STY"+GetNextByteAsAbs;
@@ -301,7 +304,7 @@ type
         $9c: result := "SHY"+GetNextByteAsAbsX;
         $9d: result := "STA"+GetNextByteAsAbsX;
         $9e: result := "SHX";
-        $9f: result := "AHX"+GetNextByteAsY;
+        $9f: result := "AHX"+GetNextByteAsAbsY;
 
         $a0: result := "LDY"+GetNextByteAsImm;
         $a1: result := "LDA"+GetNextByteAsInX;
@@ -386,7 +389,7 @@ type
         $ec: result := "CPS"+GetNextByteAsAbs;
         $ed: result := "SBC"+GetNextByteAsAbs;
         $ee: result := "INC"+GetNextByteAsAbs;
-        $ef: result := "ISC"+GetNextByteAsAba;
+        $ef: result := "ISC"+GetNextByteAsAbs;
 
         $f0: result := "BEQ"+GetNextByteAsRelative;
         $f1: result := "SBC"+GetNextByteAsInY;
