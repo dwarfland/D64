@@ -17,7 +17,7 @@
     <InfoPListFile>.\Resources\Info.plist</InfoPListFile>
     <EntitlementsFile>Resources\Entitlements.entitlements</EntitlementsFile>
     <MacIconFile>.\Resources\App.icns</MacIconFile>
-    <DefaultUses>AppKit;CoreFoundation;CoreText;Foundation;RemObjects.Elements.RTL</DefaultUses>
+    <DefaultUses>AppKit;CoreFoundation;CoreText;D64;Foundation;RemObjects.Elements.RTL</DefaultUses>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />
+    <Folder Include="Viewers" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Info.plist" />
@@ -66,6 +67,9 @@
     <Compile Include="..\PETSCII.pas" />
     <AppResource Include="Resources\CBM.ttf" />
     <Compile Include="C64Colors.pas" />
+    <Compile Include="Viewers\Viewer.pas" />
+    <Compile Include="Viewers\BinaryViewer.pas" />
+    <Compile Include="Viewers\DisassemblyViewer.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>

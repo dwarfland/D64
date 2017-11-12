@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="MainWindowController">
             <connections>
-                <outlet property="DiskTableView" destination="iJe-km-v6W" id="z3y-aI-dBC"/>
-                <outlet property="FilesTableView" destination="fTc-1K-B5U" id="clM-15-R9j"/>
+                <outlet property="ContentsTableView" destination="fTc-1K-B5U" id="V33-v5-IPK"/>
+                <outlet property="DiskImagesTableView" destination="iJe-km-v6W" id="A8Z-ax-yst"/>
+                <outlet property="ViewerPlaceholderView" destination="Phe-u2-CzW" id="0Vq-sA-c6x"/>
                 <outlet property="window" destination="5" id="13"/>
             </connections>
         </customObject>
@@ -17,10 +19,10 @@
         <window title="D64Browser" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="656" height="521"/>
+            <rect key="contentRect" x="335" y="390" width="905" height="521"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
             <view key="contentView" id="6">
-                <rect key="frame" x="0.0" y="0.0" width="656" height="521"/>
+                <rect key="frame" x="0.0" y="0.0" width="905" height="521"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hsz-id-6Kn">
@@ -116,11 +118,22 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
+                    <box boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="aaI-yA-6Eu">
+                        <rect key="frame" x="624" y="8" width="273" height="505"/>
+                        <view key="contentView" id="Phe-u2-CzW">
+                            <rect key="frame" x="1" y="1" width="271" height="503"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        </view>
+                    </box>
                 </subviews>
                 <constraints>
+                    <constraint firstAttribute="trailing" secondItem="aaI-yA-6Eu" secondAttribute="trailing" constant="8" id="B6b-En-xUG"/>
+                    <constraint firstItem="aaI-yA-6Eu" firstAttribute="leading" secondItem="Hsz-id-6Kn" secondAttribute="trailing" constant="8" id="MII-Hj-BTg"/>
                     <constraint firstAttribute="bottom" secondItem="Hsz-id-6Kn" secondAttribute="bottom" constant="8" id="Nzd-aW-Aqs"/>
+                    <constraint firstAttribute="bottom" secondItem="aaI-yA-6Eu" secondAttribute="bottom" constant="8" id="Q8k-VY-am2"/>
                     <constraint firstItem="DbY-DX-PG2" firstAttribute="leading" secondItem="6" secondAttribute="leading" constant="8" id="Usn-70-mQ5"/>
                     <constraint firstItem="DbY-DX-PG2" firstAttribute="top" secondItem="6" secondAttribute="top" constant="8" id="Xch-JC-Fa6"/>
+                    <constraint firstItem="aaI-yA-6Eu" firstAttribute="top" secondItem="6" secondAttribute="top" constant="8" id="dGw-Mh-uXr"/>
                     <constraint firstAttribute="bottom" secondItem="DbY-DX-PG2" secondAttribute="bottom" constant="8" id="pdl-mq-J0z"/>
                     <constraint firstItem="Hsz-id-6Kn" firstAttribute="top" secondItem="6" secondAttribute="top" constant="8" id="sEK-fF-oth"/>
                     <constraint firstItem="Hsz-id-6Kn" firstAttribute="leading" secondItem="DbY-DX-PG2" secondAttribute="trailing" constant="8" id="wIZ-tu-Ka9"/>
@@ -144,7 +157,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="14"/>
             </connections>
-            <point key="canvasLocation" x="206" y="164.5"/>
+            <point key="canvasLocation" x="330.5" y="164.5"/>
         </window>
     </objects>
 </document>

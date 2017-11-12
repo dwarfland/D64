@@ -15,7 +15,6 @@ type
       inherited constructor withWindowNibName('MainWindowController');
 
       var fontURL := NSBundle.mainBundle.URLForResource("CBM") withExtension("ttf");
-      NSLog('fontURL %@', fontURL);
       var lError: CFErrorRef;
       if not CTFontManagerRegisterFontsForURL(bridge<CFURLRef>(fontURL), CTFontManagerScope.Process, var lError) then
         NSLog('error loading font: %ld', lError);
@@ -31,22 +30,35 @@ type
         //end);
       //end);
 
-      FilesTableView.intercellSpacing := NSMakeSize(0, 0);
-      FilesTableView.backgroundColor := C64Colors.Blue;
+      ContentsTableView.intercellSpacing := NSMakeSize(0, 0);
+      ContentsTableView.backgroundColor := C64Colors.Blue;
 
-      writeLn(Folder.GetFiles("/Users/mh/Dropbox/C64", true));
       Files := Folder.GetFiles("/Users/mh/Dropbox/C64", true).Select(f -> f as String).Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
-      writeLn(Files);
-      DiskTableView.reloadData();
+      DiskImagesTableView.reloadData();
     end;
 
-    [IBOutlet] property DiskTableView: NSTableView;
-    [IBOutlet] property FilesTableView: NSTableView;
+    [IBOutlet] property DiskImagesTableView: NSTableView;
+    [IBOutlet] property ContentsTableView: NSTableView;
+    [IBOutlet] property ViewerPlaceholderView: NSView;
+    [IBOutlet] property ViewersPopup: NSPopUpButton;
+
+    [IBAction]
+    method LoadImages(aSender: id);
+    begin
+    end;
+
+    [IBAction]
+    method SaveFileToDisk(aSender: id);
+    begin
+    end;
+
 
   private
 
     property Files: List<String>;
     property CurrentDisk: DiskImage;
+
+    property Viewers := new List<Viewer>(new BinaryViewer, new DisassemblyViewer);
 
     //
     // INSTableViewDataSource
@@ -55,11 +67,11 @@ type
     method numberOfRowsInTableView(tableView: not nullable NSTableView): NSInteger;
     begin
 
-      if tableView = DiskTableView then begin
+      if tableView = DiskImagesTableView then begin
         result := Files:Count;
       end;
 
-      if tableView = FilesTableView then begin
+      if tableView = ContentsTableView then begin
         result := CurrentDisk:Files:Count;
       end;
 
@@ -68,11 +80,11 @@ type
     method tableView(tableView: not nullable NSTableView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger): nullable id;
     begin
 
-      if tableView = DiskTableView then begin
+      if tableView = DiskImagesTableView then begin
         result := Files[row].LastPathComponent;
       end;
 
-      if tableView = FilesTableView then begin
+      if tableView = ContentsTableView then begin
         result := CurrentDisk.Files[row].Name;
       end;
 
@@ -100,10 +112,10 @@ type
     //method tableView(tableView: not nullable NSTableView) typeSelectStringForTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger): nullable NSString;
     method tableView(tableView: not nullable NSTableView) heightOfRow(row: NSInteger): CGFloat;
     begin
-      if tableView = DiskTableView then begin
+      if tableView = DiskImagesTableView then begin
         result := 18.0;
       end;
-      if tableView = FilesTableView then begin
+      if tableView = ContentsTableView then begin
         result := 16.0;
       end;
     end;
@@ -119,10 +131,10 @@ type
       result := tableColumn:dataCell;
       if assigned(result) then begin
 
-        if tableView = DiskTableView then begin
+        if tableView = DiskImagesTableView then begin
         end;
 
-        if tableView = FilesTableView then begin
+        if tableView = ContentsTableView then begin
           (result as NSTextFieldCell).textColor := C64Colors.LightBlue;
           result:font := NSFont.fontWithName("CBM") size(16.0);
         end;
@@ -142,24 +154,52 @@ type
 
     method tableViewSelectionDidChange(notification: not nullable NSNotification);
     begin
-      writeLn(notification);
-      if notification.object = DiskTableView then begin
-        var lRow := DiskTableView.selectedRow;
+
+      if notification.object = DiskImagesTableView then begin
+        var lRow := DiskImagesTableView.selectedRow;
         CurrentDisk := nil;
-        FilesTableView.reloadData;
+        ContentsTableView.reloadData;
         try
           CurrentDisk := new DiskImage withFile(Files[lRow]);
-          FilesTableView.reloadData;
+          ContentsTableView.reloadData;
         except
           on E: Exception do
             NSLog('E %@', E);
         end;
       end;
+
+      if notification.object = ContentsTableView then begin
+        var lRow := ContentsTableView.selectedRow;
+        if lRow > -1 then begin
+
+          ShowFile(CurrentDisk.Files[lRow]) inViewer(Viewers[1]);
+
+        end;
+
+      end;
+
     end;
 
     //method tableViewColumnDidMove(notification: not nullable NSNotification);
     //method tableViewColumnDidResize(notification: not nullable NSNotification);
     //method tableViewSelectionIsChanging(notification: not nullable NSNotification);
+
+    method ShowFile(aFile: D64File) inViewer(aViewer: Viewer);
+    begin
+      var lView := aViewer.GetViewForFile(aFile);
+      for each v in ViewerPlaceholderView.subviews.copy do
+        v.removeFromSuperview;
+      lView.translatesAutoresizingMaskIntoConstraints := true;
+      lView.autoresizingMask := NSAutoresizingMaskOptions.NSViewWidthSizable or NSAutoresizingMaskOptions.NSViewHeightSizable;
+      lView.frame := ViewerPlaceholderView.bounds;
+
+      //lView.translatesAutoresizingMaskIntoConstraints := false;
+      ViewerPlaceholderView.addSubview(lView);
+      //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Top)    relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Top) multiplier(1) constant(0));
+      //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Bottom) relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Bottom) multiplier(1) constant(0));
+      //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Left)   relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Left) multiplier(1) constant(0));
+      //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Right)  relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Right) multiplier(1) constant(0));
+    end;
 
   end;
 
