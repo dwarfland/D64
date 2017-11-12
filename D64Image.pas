@@ -196,6 +196,7 @@ type
     property BAMSector: D64Sector read private write;
     property BAM: ImmutableBinary read private write;
     property DiskVersion: Byte read BAMSector[2];
+    property DOSType: String read BAMSector.GetString($a5, $2);
     property Name: String read private write;
     property DisplayName: String read private write;
     property FreeSectors: Int32 read private write;
@@ -239,11 +240,14 @@ type
       FreeSectors := lFree;
       TotalSectors := lTotal;
 
+      //var lBytes := BAMSector.GetBytesAsArray;
+      //var lNextTrack := lBytes[$00];
+      //var lNextSector := lBytes[$01];
       var lNextTrack := 18;
       var lNextSector := 1;
 
       var lFiles := new List<D64File>();
-      while lNextTrack ≠ 0 do begin
+      while (lNextTrack ≠ 0) and (lNextSector ≠ $ff) do begin
 
         var lSector := Image.GetSector(lNextSector) Track(lNextTrack);
         var lBytes := lSector.GetBytesAsArray();
@@ -252,8 +256,6 @@ type
         for f: Int32 := 0 to 7 do begin
 
           var lOffset := f*Image.Format.FileEntrySize;
-          if lBytes[lOffset+$01] = $ff then
-            break;
           var lFileType := lBytes[lOffset+$02];
           if lFileType ≠ 0 then
             lFiles.Add(new D64File withImage(Image) Sector(lSector) &Index(f));
