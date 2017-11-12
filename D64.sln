@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # RemObjects Fire
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "D64", "D64.elements", "{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}"
 EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "D64Browser", "D64Browser\D64Browser.elements", "{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -13,6 +15,10 @@ Global
 		{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
 		{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}.Release|AnyCPU.Build.0 = Release|AnyCPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
