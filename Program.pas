@@ -27,7 +27,7 @@ type
 
         case args[1] of
           "--dir": begin
-              writeLn(String.Format('0 "{0}"', lDisk.Name));
+              writeLn(String.Format('0 "{0}" {1} {2}', lDisk.Name, "  ", lDisk.Directory.DOSType));
               for each f in lDisk.Files do
                 writeLn(String.Format('{0} "{1}" {2}', f.Size, f.Name, f.FileType));
               writeLn(String.Format("{0} BLOCKS FREE ({1} BYTES)", lDisk.Directory.FreeSectors, lDisk.Directory.FreeSectors*lDisk.Format.SectorSize));
