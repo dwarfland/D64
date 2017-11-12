@@ -309,7 +309,8 @@ type
         else if lNextSector ≤ $100-$02 then
           lResult.Write(lBytes, $02, lNextSector)
         else
-          raise new Exception("Invalid size in last record.");
+          lResult.Write(lBytes, $02, $100-$02);
+          //raise new Exception("Invalid size in last record.");
 
       end;
       result := lResult;

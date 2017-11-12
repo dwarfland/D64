@@ -11,18 +11,19 @@ type
     property Name: not nullable String read "Binary"; override;
 
   protected
+
     method GetTextForFile(aFile: not nullable D64File): not nullable String; override;
     begin
       var lBytes := aFile.GetBytes.ToArray;
-      result := "";
       var lCurrentHex := "";
       var lCurrentAscii := "";
 
+      var lResult := new StringBuilder(length(lBytes)*6) as not nullable;
       for i: Int32 := 0 to length(lBytes) do begin
         lCurrentHex := lCurrentHex + Convert.ToHexString(lBytes[i], 2)+" ";
         lCurrentAscii := lCurrentAscii + (if lBytes[i] not in [32..127] then "." else chr(lBytes[i]));
         if i and $0f = $0f then begin
-          result := result+lCurrentHex.PadEnd(10*3+2)+" "+lCurrentAscii+Environment.LineBreak;
+          lResult.AppendLine(lCurrentHex.PadEnd(10*3+2)+" "+lCurrentAscii);
           lCurrentHex := "";
           lCurrentAscii := "";
         end
@@ -31,7 +32,7 @@ type
           lCurrentAscii := lCurrentAscii+" ";
         end;
       end;
-      writeLn(result);
+      result := lResult.ToString();
     end;
   end;
 

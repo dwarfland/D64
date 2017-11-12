@@ -6,7 +6,7 @@ type
   protected
   public
 
-    method GetString(aBytes: array of Byte): String;
+    method GetString(aBytes: array of Byte): not nullable String;
     begin
       result := "";
       for each b in aBytes do begin

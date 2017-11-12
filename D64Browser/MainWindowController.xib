@@ -166,11 +166,26 @@
                                 </menu>
                             </popUpButtonCell>
                         </popUpButton>
+                        <connections>
+                            <action selector="ViewerChanged:" target="-2" id="1bp-OJ-zhe"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="58084D0B-E7C5-4100-9CB2-106C0BF1F8F8" label="Save" paletteLabel="Save" tag="-1" id="ge9-yY-Dgq">
+                        <connections>
+                            <action selector="SaveFileToDisk:" target="-2" id="0wL-nc-aNz"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="6F1D5460-3908-41E5-B9ED-58893017F0E3" label="Open .D64s" paletteLabel="Toolbar Item" tag="-1" id="NBV-FP-PKF">
+                        <connections>
+                            <action selector="LoadImages:" target="-2" id="olt-xB-74i"/>
+                        </connections>
                     </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
+                    <toolbarItem reference="NBV-FP-PKF"/>
                     <toolbarItem reference="l75-JN-Ssp"/>
                     <toolbarItem reference="Rhk-jq-Pon"/>
+                    <toolbarItem reference="ge9-yY-Dgq"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>

@@ -70,6 +70,7 @@
     <Compile Include="Viewers\Viewer.pas" />
     <Compile Include="Viewers\BinaryViewer.pas" />
     <Compile Include="Viewers\DisassemblyViewer.pas" />
+    <Compile Include="Viewers\PlainTextViewer.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>

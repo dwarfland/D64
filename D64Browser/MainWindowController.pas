@@ -17,23 +17,24 @@ type
       var fontURL := NSBundle.mainBundle.URLForResource("CBM") withExtension("ttf");
       var lError: CFErrorRef;
       if not CTFontManagerRegisterFontsForURL(bridge<CFURLRef>(fontURL), CTFontManagerScope.Process, var lError) then
-        NSLog('error loading font: %ld', lError);
+        NSLog("error loading font");
     end;
 
     method windowDidLoad; override;
     begin
       inherited windowDidLoad();
-      //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), begin
-
-        //dispatch_async(dispatch_get_main_queue(), begin
-
-        //end);
-      //end);
-
       ContentsTableView.intercellSpacing := NSMakeSize(0, 0);
       ContentsTableView.backgroundColor := C64Colors.Blue;
 
-      Files := Folder.GetFiles("/Users/mh/Dropbox/C64", true).Select(f -> f as String).Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
+      //Files := Folder.GetFiles("/Users/mh/Dropbox/C64", true).Select(f -> f as String).Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
+      //DiskImagesTableView.reloadData();
+      //UpdateViewerMenu();
+
+      Files := coalesce(NSUserDefaults.standardUserDefaults.objectForKey("OpenFiles"), new List<String>);
+      //Files := coalesce(new List<String>);
+
+      //NSUserDefaults.standardUserDefaults.setObject(Files) forKey("OpenFiles");
+      //NSUserDefaults.standardUserDefaults.synchronize;
       DiskImagesTableView.reloadData();
       UpdateViewerMenu();
     end;
@@ -46,11 +47,46 @@ type
     [IBAction]
     method LoadImages(aSender: id);
     begin
+      var lPanel := NSOpenPanel.openPanel;
+      lPanel.allowedFileTypes := new List<String>("d64", "d61"); // Cocoa uses dot-less extensions
+      lPanel.allowsMultipleSelection := true;
+      lPanel.beginSheetModalForWindow(window) completionHandler( success -> begin
+        if success = NSFileHandlingPanelOKButton then begin
+          NSLog('lPanel.URLs %@', lPanel.URLs);
+          //for each u in lPanel.URLs do begin
+            //NSLog('u.path %@', u.path);
+            //NSLog('u.path.class %@', u.path.class);
+            //Files.Add(u.path);
+          //end;
+          //NSLog('Files %@', Files);
+          //Files := Files.Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
+          Files := lPanel.URLs.Select(u -> u.path as String).Where(f -> (f as String).PathExtension in [".d64", ".d61"]).OrderBy(f -> (f as String).LastPathComponent).ToList<String>();
+          NSLog('Files %@', Files);
+          NSUserDefaults.standardUserDefaults.setObject(Files) forKey("OpenFiles");
+          NSUserDefaults.standardUserDefaults.synchronize;
+          DiskImagesTableView.reloadData;
+        end;
+      end);
     end;
 
     [IBAction]
     method SaveFileToDisk(aSender: id);
     begin
+      if assigned(CurrentFile) then begin
+        var lPanel := NSSavePanel.savePanel;
+        lPanel.nameFieldStringValue := CurrentFile.Name;
+        lPanel.beginSheetModalForWindow(window) completionHandler( success -> begin
+          if success = NSFileHandlingPanelOKButton then begin
+            File.WriteBinary(lPanel.URL.path, CurrentFile.GetBytes);
+          end;
+        end);
+      end;
+    end;
+
+    [IBAction]
+    method ViewerChanged(aSender: id);
+    begin
+      ShowFile(CurrentFile) inViewer(ViewersPopup.selectedItem.representedObject)
     end;
 
 
@@ -58,8 +94,16 @@ type
 
     property Files: List<String>;
     property CurrentDisk: DiskImage;
+    property CurrentFile: D64File;
 
-    property Viewers := new List<Viewer>(new BinaryViewer, new DisassemblyViewer);
+    property Viewers := new List<Viewer>(new BinaryViewer, new DisassemblyViewer, new PlainTextViewer);
+
+    method validateUserInterfaceItem(aItem: INSValidatedUserInterfaceItem): Boolean;
+    begin
+      if aItem.action = selector(SaveFileToDisk:) then
+        result := assigned(CurrentFile);
+      result := true;
+    end;
 
     //
     // INSTableViewDataSource
@@ -170,10 +214,12 @@ type
       end;
 
       if notification.object = ContentsTableView then begin
+        CurrentFile := nil;
         var lRow := ContentsTableView.selectedRow;
         if lRow > -1 then begin
 
-          ShowFile(CurrentDisk.Files[lRow]) inViewer(Viewers[1]);
+          CurrentFile := CurrentDisk.Files[lRow];
+          ShowFile(CurrentDisk.Files[lRow]) inViewer(ViewersPopup.selectedItem.representedObject);
 
         end;
 
@@ -197,19 +243,28 @@ type
 
     method ShowFile(aFile: D64File) inViewer(aViewer: Viewer);
     begin
-      var lView := aViewer.GetViewForFile(aFile);
       for each v in ViewerPlaceholderView.subviews.copy do
         v.removeFromSuperview;
-      lView.translatesAutoresizingMaskIntoConstraints := true;
-      lView.autoresizingMask := NSAutoresizingMaskOptions.NSViewWidthSizable or NSAutoresizingMaskOptions.NSViewHeightSizable;
-      lView.frame := ViewerPlaceholderView.bounds;
+      if assigned(aFile) then begin
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), -> begin
+          var lView := aViewer.GetViewForFile(aFile);
+          if aFile = CurrentFile then begin
+            dispatch_async(dispatch_get_main_queue(), -> begin
 
-      //lView.translatesAutoresizingMaskIntoConstraints := false;
-      ViewerPlaceholderView.addSubview(lView);
-      //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Top)    relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Top) multiplier(1) constant(0));
-      //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Bottom) relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Bottom) multiplier(1) constant(0));
-      //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Left)   relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Left) multiplier(1) constant(0));
-      //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Right)  relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Right) multiplier(1) constant(0));
+              lView.translatesAutoresizingMaskIntoConstraints := true;
+              lView.autoresizingMask := NSAutoresizingMaskOptions.NSViewWidthSizable or NSAutoresizingMaskOptions.NSViewHeightSizable;
+              lView.frame := ViewerPlaceholderView.bounds;
+
+              //lView.translatesAutoresizingMaskIntoConstraints := false;
+              ViewerPlaceholderView.addSubview(lView);
+              //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Top)    relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Top) multiplier(1) constant(0));
+              //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Bottom) relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Bottom) multiplier(1) constant(0));
+              //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Left)   relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Left) multiplier(1) constant(0));
+              //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Right)  relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Right) multiplier(1) constant(0));
+            end);
+          end;
+        end);
+      end;
     end;
 
   end;

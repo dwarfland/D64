@@ -26,8 +26,8 @@ type
     method Generate(aBytes: array of Byte): not nullable String;
     begin
       lBytes := aBytes;
-      result := "";
 
+      var lResult := new StringBuilder() as not nullable;
       len := length(lBytes);
       i := 0;
       try
@@ -40,13 +40,14 @@ type
             lLine := lLine+Convert.ToHexString(lBytes[j], 2)+" ";
             inc(j);
           end;
-          result := result+lLine.PadEnd(3*3)+lOp+Environment.LineBreak;;
+          lResult.AppendLine(lLine.PadEnd(3*3)+lOp);
         end;
       except
         on E: UnexpectedEndExcetpion do
-          result := result+"// unexpecyted end"
+          lResult.Append("// unexpecyted end");
       end;
 
+      result := lResult.ToString();
     end;
 
   private
@@ -341,7 +342,7 @@ type
         $bf: result := "LAX"+GetNextByteAsAbsY;
 
         $c0: result := "CPY"+GetNextByteAsImm;
-        $c1: result := "CMP"+GetNextByteAsInx;
+        $c1: result := "CMP"+GetNextByteAsInX;
         $c2: result := "NOP"+GetNextByteAsImm;
         $c3: result := "DCP"+GetNextByteAsInX;
         $c4: result := "CPY"+GetNextByteAsZP;
