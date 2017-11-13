@@ -27,14 +27,8 @@ type
       ContentsTableView.backgroundColor := C64Colors.Blue;
 
       //Files := Folder.GetFiles("/Users/mh/Dropbox/C64", true).Select(f -> f as String).Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
-      //DiskImagesTableView.reloadData();
-      //UpdateViewerMenu();
-
-      Files := coalesce(NSUserDefaults.standardUserDefaults.objectForKey("OpenFiles"), new List<String>);
-      //Files := coalesce(new List<String>);
-
-      //NSUserDefaults.standardUserDefaults.setObject(Files) forKey("OpenFiles");
-      //NSUserDefaults.standardUserDefaults.synchronize;
+      Files := new List<String>;
+      Files.Add(List<String>(NSUserDefaults.standardUserDefaults.objectForKey("OpenFiles")));
       DiskImagesTableView.reloadData();
       UpdateViewerMenu();
     end;
@@ -52,16 +46,8 @@ type
       lPanel.allowsMultipleSelection := true;
       lPanel.beginSheetModalForWindow(window) completionHandler( success -> begin
         if success = NSFileHandlingPanelOKButton then begin
-          NSLog('lPanel.URLs %@', lPanel.URLs);
-          //for each u in lPanel.URLs do begin
-            //NSLog('u.path %@', u.path);
-            //NSLog('u.path.class %@', u.path.class);
-            //Files.Add(u.path);
-          //end;
-          //NSLog('Files %@', Files);
-          //Files := Files.Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
-          Files := lPanel.URLs.Select(u -> u.path as String).Where(f -> (f as String).PathExtension in [".d64", ".d61"]).OrderBy(f -> (f as String).LastPathComponent).ToList<String>();
-          NSLog('Files %@', Files);
+          for each u: NSURL in lPanel.URLs do
+            Files.Add(u.path);
           NSUserDefaults.standardUserDefaults.setObject(Files) forKey("OpenFiles");
           NSUserDefaults.standardUserDefaults.synchronize;
           DiskImagesTableView.reloadData;

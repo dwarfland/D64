@@ -32,7 +32,7 @@ type
           lCurrentAscii := lCurrentAscii+" ";
         end;
       end;
-      result := lResult.ToString();
+      result := lResult.ToString() as not nullable;
     end;
   end;
 

@@ -302,15 +302,9 @@ type
         lNextTrack := lBytes[$00];
         lNextSector := lBytes[$01];
 
-        if lResult.Length = 0 then
-          lResult.Write(lBytes, $04, $100-$04) // skip the load address
-        else if lNextTrack ≠ 0 then
-          lResult.Write(lBytes, $02, $100-$02)
-        else if lNextSector ≤ $100-$02 then
-          lResult.Write(lBytes, $02, lNextSector)
-        else
-          lResult.Write(lBytes, $02, $100-$02);
-          //raise new Exception("Invalid size in last record.");
+        var lStart := if lResult.Length = 0 then $04 else $02;
+        var lEnd := if lNextTrack ≠ 0 then $ff else lNextSector;
+        lResult.Write(lBytes, lStart, lEnd-lStart+1);
 
       end;
       result := lResult;
