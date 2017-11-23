@@ -1,5 +1,9 @@
 ﻿namespace D64;
 
+//
+// Based on Info from https://dflund.se/~triad/krad/recode/petscii_c64en_uc.txt
+//
+
 type
   PETSCII = public static class
   private
@@ -18,7 +22,6 @@ type
       end;
     end;
 
-    // from https://dflund.se/~triad/krad/recode/petscii_c64en_uc.txt, thanx to Linus Walleij <triad@df.lth.se>
     const PETSCII2Unicode = [#$0000, #$0000, #$0000, #$0000, #$0000, #$F100, #$0000, #$0000, #$F118, #$F119, #$0000, #$0000, #$0000, #$000D, #$000E, #$0000,
                              #$0000, #$F11C, #$F11A, #$F120, #$007F, #$0000, #$0000, #$0000, #$0000, #$0000, #$0000, #$0000, #$F101, #$F11D, #$F102, #$F103,
                              #$0020, #$0021, #$0022, #$0023, #$0024, #$0025, #$0026, #$0027, #$0028, #$0029, #$002A, #$002B, #$002C, #$002D, #$002E, #$002F,

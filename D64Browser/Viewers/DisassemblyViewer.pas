@@ -1,5 +1,9 @@
 ﻿namespace D64Browser;
 
+//
+// Based on Info from https://www.c64-wiki.de/wiki/Opcode
+//
+
 type
   DisassemblyViewer = public class(TextBasedViewer)
   public

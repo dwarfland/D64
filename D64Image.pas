@@ -1,5 +1,9 @@
 ﻿namespace D64;
 
+//
+// Based on Info from http://unusedino.de/ec64/technical/formats/d64.html and http://unusedino.de/ec64/technical/formats/d71.html
+//
+
 type
   DiskFormat = public abstract class
   public
