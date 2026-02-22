@@ -27,19 +27,19 @@ type
 
         case args[1] of
           "--dir": begin
-              writeLn(String.Format('0 "{0}" {1} {2}', lDisk.Name, "  ", lDisk.Directory.DOSType));
+              writeLn(#""0 "{lDisk.Name}"    {lDisk.Directory.DOSType}"");
               for each f in lDisk.Files do
-                writeLn(String.Format('{0} "{1}" {2}', f.Size, f.Name, f.FileType));
-              writeLn(String.Format("{0} BLOCKS FREE ({1} BYTES)", lDisk.Directory.FreeSectors, lDisk.Directory.FreeSectors*lDisk.Format.SectorSize));
+                writeLn(#""{f.Size} "{f.Name}" {f.FileType}"");
+              writeLn(#"{lDisk.Directory.FreeSectors} BLOCKS FREE ({lDisk.Directory.FreeSectors*lDisk.Format.SectorSize} BYTES)");
             end;
           "--files": begin
               for i: Int32 := 0 to lDisk.Files.Count-1 do begin
                 var f := lDisk.Files[i];
-                &write(String.Format('{0}: {1} "{2}" {3}', i, f.Size, f.Name, f.FileType));
+                &write(#""{i}: {f.Size} "{f.Name}" {f.FileType}"");
                 if f.FileType in ["PRG"] then
-                  &write(String.Format(', {0} bytes on disk', f.GetBytes.Length));
+                  &write(#", {f.GetBytes.Length} bytes on disk");
                 if f.LoadAddress ≠ $0801 then
-                  &write(String.Format(', loads to ${0}', Convert.ToHexString(f.LoadAddress, 4)));
+                  &write(#", loads to ${Convert.ToHexString(f.LoadAddress, 4)}");
                 writeLn();
               end;
             end;
@@ -50,7 +50,7 @@ type
                   var lFile := lDisk.Files[lIndex];
                   var lBytes := lFile.GetBytes();
                   File.WriteBinary(args[3], lBytes);
-                  writeLn(String.Format("Wrote {0} bytes to {1}", lBytes.Length, args[3]));
+                  writeLn(#"Wrote {lBytes.Length} bytes to {args[3]}");
                 end
                 else
                   writeLn("Invalid file index.");
