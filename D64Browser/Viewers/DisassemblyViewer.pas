@@ -36,7 +36,7 @@ type
       i := 0;
       try
         while i < len do begin
-          var j = i;
+          var j := i;
           var lOp := GenerateOpcode;
           inc(i);
           var lLine := "";

@@ -4,12 +4,27 @@ uses
   D64;
 
 type
+  ColorMode = public enum (C64, C128);
+
   [IBObject]
   MainWindowController = public class(NSWindowController, INSTableViewDataSource, INSTableViewDelegate)
   private
   protected
 
+    property ColorMode: ColorMode := ColorMode.C128;
+
+    property BackgroundColor: NSColor read case ColorMode of
+      ColorMode.C64: C64Colors.Blue;
+      ColorMode.C128: C64Colors.DarkGrey;
+    end;
+
+    property ForegroundColor: NSColor read case ColorMode of
+      ColorMode.C64: C64Colors.LightBlue;
+      ColorMode.C128: C64Colors.LightGreen;
+    end;
+
   public
+
     constructor;
     begin
       inherited constructor withWindowNibName('MainWindowController');
@@ -24,7 +39,7 @@ type
     begin
       inherited windowDidLoad();
       ContentsTableView.intercellSpacing := NSMakeSize(0, 0);
-      ContentsTableView.backgroundColor := C64Colors.Blue;
+      ContentsTableView.backgroundColor := BackgroundColor;
 
       //Files := Folder.GetFiles("/Users/mh/Dropbox/C64", true).Select(f -> f as String).Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
       Files := new List<String>;
@@ -32,6 +47,13 @@ type
       DiskImagesTableView.reloadData();
       UpdateViewerMenu();
     end;
+
+    [IBAction]
+    method setColors(aSender: id); public;
+    begin
+      //ContentsTableView.backgroundColor := C64Colors.Blue;
+    end;
+
 
     [IBOutlet] property DiskImagesTableView: NSTableView;
     [IBOutlet] property ContentsTableView: NSTableView;
@@ -166,7 +188,7 @@ type
         end;
 
         if tableView = ContentsTableView then begin
-          (result as NSTextFieldCell).textColor := C64Colors.LightBlue;
+          (result as NSTextFieldCell).textColor := ForegroundColor;
           result:font := NSFont.fontWithName("CBM") size(16.0);
         end;
 
@@ -231,25 +253,21 @@ type
     begin
       for each v in ViewerPlaceholderView.subviews.copy do
         v.removeFromSuperview;
-      if assigned(aFile) then begin
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), -> begin
-          var lView := aViewer.GetViewForFile(aFile);
-          if aFile = CurrentFile then begin
-            dispatch_async(dispatch_get_main_queue(), -> begin
+      if assigned(aFile) and not aFile.IsDirectory then begin
+        var lView := aViewer.GetViewForFile(aFile);
+        if aFile = CurrentFile then begin
 
-              lView.translatesAutoresizingMaskIntoConstraints := true;
-              lView.autoresizingMask := NSAutoresizingMaskOptions.NSViewWidthSizable or NSAutoresizingMaskOptions.NSViewHeightSizable;
-              lView.frame := ViewerPlaceholderView.bounds;
+          lView.translatesAutoresizingMaskIntoConstraints := true;
+          lView.autoresizingMask := NSAutoresizingMaskOptions.NSViewWidthSizable or NSAutoresizingMaskOptions.NSViewHeightSizable;
+          lView.frame := ViewerPlaceholderView.bounds;
 
-              //lView.translatesAutoresizingMaskIntoConstraints := false;
-              ViewerPlaceholderView.addSubview(lView);
-              //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Top)    relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Top) multiplier(1) constant(0));
-              //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Bottom) relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Bottom) multiplier(1) constant(0));
-              //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Left)   relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Left) multiplier(1) constant(0));
-              //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Right)  relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Right) multiplier(1) constant(0));
-            end);
-          end;
-        end);
+          //lView.translatesAutoresizingMaskIntoConstraints := false;
+          ViewerPlaceholderView.addSubview(lView);
+          //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Top)    relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Top) multiplier(1) constant(0));
+          //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Bottom) relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Bottom) multiplier(1) constant(0));
+          //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Left)   relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Left) multiplier(1) constant(0));
+          //ViewerPlaceholderView.addConstraint(NSLayoutConstraint.constraintWithItem(lView) attribute(NSLayoutAttribute.Right)  relatedBy(NSLayoutRelation.Equal) toItem(ViewerPlaceholderView) attribute(NSLayoutAttribute.Right) multiplier(1) constant(0));
+        end;
       end;
     end;
 

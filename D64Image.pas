@@ -291,6 +291,8 @@ type
     property SideSector: Byte read private write;
     property RecordLength: Byte read private write;
 
+    property IsDirectory: Boolean read (StartTrack = 18) and (StartSector = 0);
+
     method GetBytes: ImmutableBinary;
     begin
       var lNextTrack := StartTrack;
