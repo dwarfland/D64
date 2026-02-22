@@ -74,7 +74,7 @@ type
     method LoadImages(aSender: id);
     begin
       var lPanel := NSOpenPanel.openPanel;
-      lPanel.allowedFileTypes := new List<String>("d64", "d71"); // Cocoa uses dot-less extensions
+      lPanel.allowedFileTypes := new List<String>("d64", "d61", "d71", "d81"); // Cocoa uses dot-less extensions
       lPanel.allowsMultipleSelection := true;
       lPanel.beginSheetModalForWindow(window) completionHandler( success -> begin
         if success = NSFileHandlingPanelOKButton then begin

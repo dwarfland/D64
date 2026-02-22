@@ -27,6 +27,7 @@
 				<array>
 					<string>com.dwarfland.d64</string>
 					<string>com.dwarfland.d71</string>
+					<string>com.dwarfland.d81</string>
 				</array>
 			</dict>
 		</array>
@@ -53,6 +54,7 @@
 				<dict>
 					<key>public.filename-extension</key>
 					<array>
+						<string>d61</string>
 						<string>d64</string>
 					</array>
 				</dict>
@@ -71,6 +73,23 @@
 					<key>public.filename-extension</key>
 					<array>
 						<string>d71</string>
+					</array>
+				</dict>
+			</dict>
+			<dict>
+				<key>UTTypeIdentifier</key>
+				<string>com.dwarfland.d81</string>
+				<key>UTTypeDescription</key>
+				<string>Commodore 1581 Disk Image</string>
+				<key>UTTypeConformsTo</key>
+				<array>
+					<string>public.data</string>
+				</array>
+				<key>UTTypeTagSpecification</key>
+				<dict>
+					<key>public.filename-extension</key>
+					<array>
+						<string>d81</string>
 					</array>
 				</dict>
 			</dict>
