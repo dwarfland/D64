@@ -163,6 +163,7 @@ type
     end;
 
   unit
+
    constructor withImage(aImage: DiskImage) Sector(aSector: Integer) Track(aTrack: Integer);
    begin
      Image := aImage;
@@ -283,8 +284,8 @@ type
     property Size: Int32 read private write;
     property StartTrack: Byte read private write;
     property StartSector: Byte read private write;
-    property &Locked: Byte read private write;
-    property Closed: Byte read private write;
+    property &Locked: Boolean read private write;
+    property Closed: Boolean read private write;
     property LoadAddress: Int32 read get_LoadAddress;
 
     property SideTrack: Byte read private write;
@@ -310,7 +311,9 @@ type
 
         var lStart := if lResult.Length = 0 then $04 else $02;
         var lEnd := if lNextTrack ≠ 0 then $ff else lNextSector;
-        lResult.Write(lBytes, lStart, lEnd-lStart+1);
+        var lLength := lEnd-lStart+1;
+        if lLength > 0 then
+          lResult.Write(lBytes, lStart, lLength);
 
       end;
       result := lResult;
@@ -336,8 +339,8 @@ type
           $03: "USR";
           $04: "REL";
         end;
-        &Locked := FileTypeCode and $40;
-        &Closed := FileTypeCode and $80;
+        &Locked := FileTypeCode and $40 > 0;
+        &Closed := FileTypeCode and $80 > 0;
         StartTrack := lBytes[$03];
         StartSector := lBytes[$04];
         Name := aSector.GetString(lOffset+$05, $10);
@@ -358,6 +361,8 @@ type
 
     method get_LoadAddress: Int32;
     begin
+      if StartTrack = 0 then
+        exit 0;
       var lSector := Image.GetSector(StartSector) Track(StartTrack);
       var lBytes := lSector.GetBytesAsArray();
       result := lBytes[$02]+lBytes[$03]*$100;
