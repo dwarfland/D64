@@ -79,7 +79,7 @@ type
       constructor withBinary(File.ReadBinary(aFilename), DiskFormat.DiskFormatForExtension(aFilename.PathExtension));
     end;
 
-    constructor withBinary(aBinary: not nullable Binary; aFormat: DiskFormat);
+    constructor withBinary(aBinary: not nullable ImmutableBinary; aFormat: DiskFormat);
     begin
       if aBinary.Length < 174848 then
         raise new Exception("File to small to be a D64 image");
