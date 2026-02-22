@@ -11,7 +11,7 @@ type
   private
   protected
 
-    property ColorMode: ColorMode := ColorMode.C128;
+    property ColorMode: ColorMode := ColorMode.C64;
 
     property BackgroundColor: NSColor read case ColorMode of
       ColorMode.C64: C64Colors.Blue;
@@ -61,6 +61,18 @@ type
     [IBOutlet] property ViewersPopup: NSPopUpButton;
 
     [IBAction]
+    method ChangeColor(aSender: id); public;
+    begin
+      case NSMenuItem(aSender):identifier of
+        "c64": ColorMode := ColorMode.C64;
+        "c128": ColorMode := ColorMode.C128;
+      end;
+      ContentsTableView.backgroundColor := BackgroundColor;
+      ContentsTableView.setNeedsDisplay;
+    end;
+
+
+    [IBAction]
     method LoadImages(aSender: id);
     begin
       var lPanel := NSOpenPanel.openPanel;
@@ -97,7 +109,6 @@ type
       ShowFile(CurrentFile) inViewer(ViewersPopup.selectedItem.representedObject)
     end;
 
-
   private
 
     property Files: List<String>;
@@ -108,9 +119,15 @@ type
 
     method validateUserInterfaceItem(aItem: INSValidatedUserInterfaceItem): Boolean;
     begin
+      result := true;
+
       if aItem.action = selector(SaveFileToDisk:) then
         result := assigned(CurrentFile);
-      result := true;
+
+      case NSMenuItem(aItem):identifier of
+        "c64": NSMenuItem(aItem).state := if ColorMode = ColorMode.C64 then NSOnState else NSOffState;
+        "c128": NSMenuItem(aItem).state := if ColorMode = ColorMode.C128 then NSOnState else NSOffState;
+      end;
     end;
 
     //
