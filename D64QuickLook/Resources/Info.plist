@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundlePackageType</key>
+		<string>XPC!</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleExecutable</key>
+		<string>D64QuickLook</string>
+		<key>CFBundleIdentifier</key>
+		<string>com.dwarfland.D64QuickLook</string>
+		<key>CFBundleName</key>
+		<string>D64QuickLook</string>
+		<key>CFBundleShortVersionString</key>
+		<string>1.0</string>
+		<key>CFBundleVersion</key>
+		<string>1</string>
+		<key>NSHumanReadableCopyright</key>
+		<string>Copyright Vision Thing B.V. All rights reserved.</string>
+		<key>NSExtension</key>
+		<dict>
+			<key>NSExtensionAttributes</key>
+			<dict>
+				<key>QLSupportedContentTypes</key>
+				<array>
+					<string>com.dwarfland.d64</string>
+				</array>
+			</dict>
+			<key>NSExtensionPointIdentifier</key>
+			<string>com.apple.quicklook.preview</string>
+			<key>NSExtensionPrincipalClass</key>
+			<string>D64ViewController</string>
+		</dict>
+	</dict>
+</plist>

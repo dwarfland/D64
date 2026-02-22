@@ -18,6 +18,7 @@
     <EntitlementsFile>Resources\Entitlements.entitlements</EntitlementsFile>
     <MacIconFile>.\Resources\App.icns</MacIconFile>
     <DefaultUses>AppKit;CoreFoundation;CoreText;D64;Foundation;RemObjects.Elements.RTL</DefaultUses>
+    <CodeSignCertificateName>Developer ID Application: RemObjects Software (24G43Y5373)</CodeSignCertificateName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -46,17 +47,15 @@
       <HintPath>..\..\RTL2\Source\bin\Debug\macOS\libElements.fx</HintPath>
     </Reference>
     <Reference Include="CoreText" />
+    <ProjectReference Include="..\D64QuickLook\D64QuickLook.elements">
+      <Project>{0cb3614d-2614-4684-970a-d1f05bdf1082}</Project>
+      <ProjectFile>..\D64QuickLook\D64QuickLook.elements</ProjectFile>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppDelegate.pas" />
     <Compile Include="MainWindowController.pas" />
     <None Include="Resources\Entitlements.entitlements" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources" />
-    <Folder Include="Viewers" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Resources\Info.plist" />
     <Content Include="Resources\App.icns" />
     <Xib Include="MainWindowController.xib">
@@ -71,6 +70,10 @@
     <Compile Include="Viewers\BinaryViewer.pas" />
     <Compile Include="Viewers\DisassemblyViewer.pas" />
     <Compile Include="Viewers\PlainTextViewer.pas" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+    <Folder Include="Viewers" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>

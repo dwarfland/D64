@@ -1,9 +1,11 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # RemObjects Fire
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "D64", "D64.elements", "{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}"
+Project("{656346d9-4656-40da-a068-22d5425d4639}") = "D64", "D64.elements", "{69ca011e-36d7-4f6c-96f0-b05bdf66a11f}"
 EndProject
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "D64Browser", "D64Browser\D64Browser.elements", "{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}"
+Project("{656346d9-4656-40da-a068-22d5425d4639}") = "D64Browser", "D64Browser\D64Browser.elements", "{81882b9c-c570-410a-96a3-6edcd3fef1f8}"
+EndProject
+Project("{656346d9-4656-40da-a068-22d5425d4639}") = "D64QuickLook", "D64QuickLook\D64QuickLook.elements", "{0cb3614d-2614-4684-970a-d1f05bdf1082}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,14 +13,18 @@ Global
 		Release|AnyCPU = Release|AnyCPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
-		{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
-		{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
-		{69CA011E-36D7-4F6C-96F0-B05BDF66A11F}.Release|AnyCPU.Build.0 = Release|AnyCPU
-		{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
-		{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
-		{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
-		{81882B9C-C570-410A-96A3-6EDCD3FEF1F8}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{69ca011e-36d7-4f6c-96f0-b05bdf66a11f}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{69ca011e-36d7-4f6c-96f0-b05bdf66a11f}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{69ca011e-36d7-4f6c-96f0-b05bdf66a11f}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{69ca011e-36d7-4f6c-96f0-b05bdf66a11f}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{81882b9c-c570-410a-96a3-6edcd3fef1f8}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{81882b9c-c570-410a-96a3-6edcd3fef1f8}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{81882b9c-c570-410a-96a3-6edcd3fef1f8}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{81882b9c-c570-410a-96a3-6edcd3fef1f8}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{0cb3614d-2614-4684-970a-d1f05bdf1082}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{0cb3614d-2614-4684-970a-d1f05bdf1082}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{0cb3614d-2614-4684-970a-d1f05bdf1082}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{0cb3614d-2614-4684-970a-d1f05bdf1082}.Release|AnyCPU.Build.0 = Release|AnyCPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

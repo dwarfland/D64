@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <RootNamespace>D64QuickLook</RootNamespace>
+    <ProjectGuid>{0CB3614D-2614-4684-970A-D1F05BDF1082}</ProjectGuid>
+    <OutputType>Extension</OutputType>
+    <BinaryName>D64QuickLook</BinaryName>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <SDK>macOS</SDK>
+    <MangleTypeNames>True</MangleTypeNames>
+    <CreateAppBundle>True</CreateAppBundle>
+    <InfoPListFile>.\Resources\Info.plist</InfoPListFile>
+    <EntitlementsFile>Resources\Entitlements.entitlements</EntitlementsFile>
+    <MacIconFile>.\Resources\App.icns</MacIconFile>
+    <DefaultUses>RemObjects.Elements.RTL</DefaultUses>
+    <BundleExtension>.appex</BundleExtension>
+    <BundlePackageType>XPC!</BundlePackageType>
+    <BundleIdentifier>org.me.D64Browser.d64quicklook</BundleIdentifier>
+    <CodeSignCertificateName>Developer ID Application: RemObjects Software (24G43Y5373)</CodeSignCertificateName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <OutputPath>.\Bin\Debug</OutputPath>
+    <ConditionalDefines>DEBUG;TRACE;</ConditionalDefines>
+    <GenerateDebugInfo>True</GenerateDebugInfo>
+    <EnableAsserts>True</EnableAsserts>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>.\Bin\Release</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Cocoa" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
+    <Reference Include="QuickLook" />
+    <Reference Include="QuickLookUI" />
+    <Reference Include="QuickLookThumbnailing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="D64ViewController.pas" />
+    <None Include="Resources\Entitlements.entitlements" />
+    <Content Include="Resources\Info.plist" />
+    <Content Include="Resources\App.icns" />
+    <Compile Include="..\D64Image.pas" />
+    <Compile Include="..\PETSCII.pas" />
+    <AppResource Include="..\D64Browser\Resources\CBM.ttf" />
+    <None Include="Program.pas" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
+</Project>
