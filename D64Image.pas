@@ -20,9 +20,27 @@ type
     begin
       case aExtension.ToLower of
         ".d64": result := new D64DiskFormat;
+        ".d61": result := new D64DiskFormat;
         ".d71": result := new D71DiskFormat;
+        ".d81": result := new D81DiskFormat;
         else raise new Exception(String.Format("Unsupported disk format: '{0}'", aExtension));
       end;
+    end;
+
+    method GetTrackOffset(aTrack: Int32): Int32; virtual;
+    begin
+      result := TrackOffsets[aTrack];
+    end;
+
+    method GetSectorsForTrack(aTrack: Int32): Byte; virtual;
+    begin
+      result := SectorsPerTrack[aTrack];
+    end;
+
+    method GetMinimumImageSize: Int32; virtual;
+    begin
+      var lTrack := MinNumberOfTracks;
+      result := GetTrackOffset(lTrack)+GetSectorsForTrack(lTrack)*SectorSize;
     end;
 
   end;
@@ -69,6 +87,25 @@ type
                              17, 17, 17, 17, 17]; override;
   end;
 
+  D81DiskFormat = public class(DiskFormat)
+  public
+    property FormatName: String read "D81"; override;
+    property MinNumberOfTracks: Int32 read 80; override;
+    property MaxNumberOfTracks: Int32 read 80; override;
+    property TrackOffsets: array of Int32 read []; override;
+    property SectorsPerTrack: array of Byte read []; override;
+
+    method GetTrackOffset(aTrack: Int32): Int32; override;
+    begin
+      result := (aTrack-1)*$2800;
+    end;
+
+    method GetSectorsForTrack(aTrack: Int32): Byte; override;
+    begin
+      result := 40;
+    end;
+  end;
+
   DiskImage = public class
   private
   protected
@@ -81,8 +118,9 @@ type
 
     constructor withBinary(aBinary: not nullable ImmutableBinary; aFormat: DiskFormat);
     begin
-      if aBinary.Length < 174848 then
-        raise new Exception("File to small to be a D64 image");
+      var lMinimumSize := aFormat.GetMinimumImageSize;
+      if aBinary.Length < lMinimumSize then
+        raise new Exception(String.Format("File too small to be a {0} image", aFormat.FormatName));
       Format := aFormat;
       Binary := aBinary;
       Directory := new D64Directory withImage(self);
@@ -170,13 +208,13 @@ type
      Sector := aSector;
      Track := aTrack;
 
-     if (aTrack < 1) or (aTrack > length(Image.Format.TrackOffsets)) then
+     if (aTrack < 1) or (aTrack > Image.Format.MaxNumberOfTracks) then
        raise new Exception(String.Format("Invalid track number {0}", aTrack));
 
-     var lTrackOffset := Image.Format.TrackOffsets[aTrack];
+     var lTrackOffset := Image.Format.GetTrackOffset(aTrack);
      if lTrackOffset > Image.Binary.Length then
        raise new Exception(String.Format("Image too small to contain track {0}", aTrack));
-     if (aSector < 0) or (aSector >= Image.Format.SectorsPerTrack[aTrack]) then
+     if (aSector < 0) or (aSector >= Image.Format.GetSectorsForTrack(aTrack)) then
        raise new Exception(String.Format("Invalid sector number {0} for track {1}", aSector, aTrack));
 
      SectorOffset := lTrackOffset+aSector*Image.Format.SectorSize;
@@ -201,7 +239,7 @@ type
     property BAMSector: D64Sector read private write;
     property BAM: ImmutableBinary read private write;
     property DiskVersion: Byte read BAMSector[2];
-    property DOSType: String read BAMSector.GetString($a5, $2);
+    property DOSType: String read private write;
     property Name: String read private write;
     property DisplayName: String read private write;
     property FreeSectors: Int32 read private write;
@@ -225,21 +263,47 @@ type
     constructor withImage(aImage: DiskImage);
     begin
       Image := aImage;
-      BAMSector := Image.GetSector(0) Track(18);
-
-      Name := BAMSector.GetString($90, $10);
-      DisplayName := BAMSector.GetUnicodeString($90, $10);
-
-      BAM := BAMSector.GetBytes($04, $8f-$04);
-      var lBAMBytes := BAM.ToArray;
+      var lDirectoryTrack: Byte := 18;
+      var lDirectorySector: Byte := 1;
       var lFree := 0;
       var lTotal := 0;
-      for t: Byte := 1 to 35 do begin
-        if t ≠ 18 then begin
-          var lOffset := (t-1)*4;
-          //writeLn(String.Format("{0} of {1} Free", BAM[lOffset], Image.Format.SectorsPerTrack[t]));
-          inc(lFree, lBAMBytes[lOffset]);
-          inc(lTotal, Image.Format.SectorsPerTrack[t]);
+
+      if Image.Format is D81DiskFormat then begin
+        BAMSector := Image.GetSector(0) Track(40);
+        Name := BAMSector.GetString($04, $10);
+        DisplayName := BAMSector.GetUnicodeString($04, $10);
+        DOSType := BAMSector.GetString($19, $2);
+
+        lDirectoryTrack := BAMSector[$00];
+        lDirectorySector := BAMSector[$01];
+
+        var lBAM1 := Image.GetSector(1) Track(40).GetBytesAsArray;
+        var lBAM2 := Image.GetSector(2) Track(40).GetBytesAsArray;
+        for t: Int32 := 1 to 80 do begin
+          if t ≠ 40 then begin
+            var lTrack := if t <= 40 then t else t-40;
+            var lBAMData := if t <= 40 then lBAM1 else lBAM2;
+            var lOffset := $10+(lTrack-1)*6;
+            inc(lFree, lBAMData[lOffset]);
+            inc(lTotal, Image.Format.GetSectorsForTrack(t));
+          end;
+        end;
+      end
+      else begin
+        BAMSector := Image.GetSector(0) Track(18);
+        Name := BAMSector.GetString($90, $10);
+        DisplayName := BAMSector.GetUnicodeString($90, $10);
+        DOSType := BAMSector.GetString($a5, $2);
+
+        BAM := BAMSector.GetBytes($04, $8f-$04);
+        var lBAMBytes := BAM.ToArray;
+        for t: Byte := 1 to 35 do begin
+          if t ≠ 18 then begin
+            var lOffset := (t-1)*4;
+            //writeLn(String.Format("{0} of {1} Free", BAM[lOffset], Image.Format.GetSectorsForTrack(t)));
+            inc(lFree, lBAMBytes[lOffset]);
+            inc(lTotal, Image.Format.GetSectorsForTrack(t));
+          end;
         end;
       end;
       FreeSectors := lFree;
@@ -248,8 +312,8 @@ type
       //var lBytes := BAMSector.GetBytesAsArray;
       //var lNextTrack := lBytes[$00];
       //var lNextSector := lBytes[$01];
-      var lNextTrack := 18;
-      var lNextSector := 1;
+      var lNextTrack := lDirectoryTrack;
+      var lNextSector := lDirectorySector;
 
       var lFiles := new List<D64File>();
       while (lNextTrack ≠ 0) and (lNextSector ≠ $ff) do begin

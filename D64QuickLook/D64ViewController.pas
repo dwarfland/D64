@@ -55,6 +55,10 @@ type
               BackgroundColor := D64Browser.C64Colors.DarkGrey;
               ForegroundColor := D64Browser.C64Colors.LightGreen;
             end;
+          "d81": begin
+              BackgroundColor := D64Browser.C64Colors.LightGrey;
+              ForegroundColor := D64Browser.C64Colors.DarkGrey;
+            end;
           else begin
               BackgroundColor := D64Browser.C64Colors.Blue;
               ForegroundColor := D64Browser.C64Colors.LightBlue;

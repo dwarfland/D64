@@ -26,6 +26,7 @@
 				<array>
 					<string>com.dwarfland.d64</string>
 					<string>com.dwarfland.d71</string>
+					<string>com.dwarfland.d81</string>
 				</array>
 			</dict>
 			<key>NSExtensionPointIdentifier</key>
