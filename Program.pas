@@ -35,10 +35,10 @@ type
           "--files": begin
               for i: Int32 := 0 to lDisk.Files.Count-1 do begin
                 var f := lDisk.Files[i];
-                &write(#""{i}: {f.Size} "{f.Name}" {f.FileType}"");
+                &write(#""{i}: {f.Size} "{f.Name}" {if not f.Closed then "*"}{f.FileType}"");
                 if f.FileType in ["PRG"] then
                   &write(#", {f.GetBytes.Length} bytes on disk");
-                if f.LoadAddress ≠ $0801 then
+                if f.Closed and (f.LoadAddress ≠ $0801) then
                   &write(#", loads to ${Convert.ToHexString(f.LoadAddress, 4)}");
                 writeLn();
               end;

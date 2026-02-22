@@ -46,6 +46,7 @@
     <Compile Include="..\PETSCII.pas" />
     <AppResource Include="..\D64Browser\Resources\CBM.ttf" />
     <None Include="Program.pas" />
+    <Compile Include="..\D64Browser\C64Colors.pas" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />

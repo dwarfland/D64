@@ -4,8 +4,6 @@ uses
   D64;
 
 type
-  ColorMode = public enum (C64, C128);
-
   [IBObject]
   MainWindowController = public class(NSWindowController, INSTableViewDataSource, INSTableViewDelegate)
   private
@@ -41,7 +39,7 @@ type
       ContentsTableView.intercellSpacing := NSMakeSize(0, 0);
       ContentsTableView.backgroundColor := BackgroundColor;
 
-      //Files := Folder.GetFiles("/Users/mh/Dropbox/C64", true).Select(f -> f as String).Where(f -> f.PathExtension in [".d64", ".d61"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
+      //Files := Folder.GetFiles("/Users/mh/Dropbox/C64", true).Select(f -> f as String).Where(f -> f.PathExtension in [".d64", ".d71"]).OrderBy(f -> f.LastPathComponent).ToList<String>();
       Files := new List<String>;
       Files.Add(List<String>(NSUserDefaults.standardUserDefaults.objectForKey("OpenFiles")));
       DiskImagesTableView.reloadData();
@@ -76,7 +74,7 @@ type
     method LoadImages(aSender: id);
     begin
       var lPanel := NSOpenPanel.openPanel;
-      lPanel.allowedFileTypes := new List<String>("d64", "d61"); // Cocoa uses dot-less extensions
+      lPanel.allowedFileTypes := new List<String>("d64", "d71"); // Cocoa uses dot-less extensions
       lPanel.allowsMultipleSelection := true;
       lPanel.beginSheetModalForWindow(window) completionHandler( success -> begin
         if success = NSFileHandlingPanelOKButton then begin

@@ -5,6 +5,8 @@
 //
 
 type
+  ColorMode = public enum (C64, C128);
+
   C64Colors = public static class
   public
     property Black:     NSColor := GetColor($00); lazy; readonly; // Black

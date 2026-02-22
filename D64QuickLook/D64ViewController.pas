@@ -1,4 +1,4 @@
-namespace D64QuickLook;
+﻿namespace D64QuickLook;
 
 uses
   D64,
@@ -10,6 +10,11 @@ type
   [IBObject]
   D64ViewController = public class(NSViewController, IQLPreviewingController, INSTableViewDataSource, INSTableViewDelegate)
   public
+
+    property ColorMode: ColorMode := ColorMode.C64;
+
+    property BackgroundColor: NSColor;
+    property ForegroundColor: NSColor;
 
     method loadView; override;
     begin
@@ -25,7 +30,7 @@ type
       fTableView.dataSource := self;
       fTableView.delegate := self;
       fTableView.intercellSpacing := NSMakeSize(0, 0);
-      fTableView.backgroundColor := NSColor.colorWithDeviceRed(53.0/255.0) green(40.0/255.0) blue(121.0/255.0) alpha(1.0);
+      //fTableView.backgroundColor := NSColor.colorWithDeviceRed(53.0/255.0) green(40.0/255.0) blue(121.0/255.0) alpha(1.0);
       fTableView.headerView := nil;
       fTableView.usesAlternatingRowBackgroundColors := false;
 
@@ -44,6 +49,18 @@ type
         var lPath := if assigned(url) then url.path else nil;
         if (lPath = nil) or (length(lPath) = 0) then
           raise new Exception("No preview file URL received.");
+
+        case url.pathExtension of
+          "d71": begin
+              BackgroundColor := D64Browser.C64Colors.DarkGrey;
+              ForegroundColor := D64Browser.C64Colors.LightGreen;
+            end;
+          else begin
+              BackgroundColor := D64Browser.C64Colors.Blue;
+              ForegroundColor := D64Browser.C64Colors.LightBlue;
+            end;
+        end;
+        fTableView.backgroundColor := BackgroundColor;
 
         fStatusMessage := nil;
         fCurrentDisk := new DiskImage withFile(lPath);
@@ -95,7 +112,7 @@ type
       if assigned(result) then begin
         var lTextCell := result as NSTextFieldCell;
         if assigned(lTextCell) then begin
-          lTextCell.textColor := NSColor.colorWithDeviceRed(135.0/255.0) green(124.0/255.0) blue(202.0/255.0) alpha(1.0);
+          lTextCell.textColor := ForegroundColor;
           lTextCell.font := NSFont.fontWithName("CBM") size(16.0);
         end;
       end;

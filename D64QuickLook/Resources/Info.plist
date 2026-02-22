@@ -25,6 +25,7 @@
 				<key>QLSupportedContentTypes</key>
 				<array>
 					<string>com.dwarfland.d64</string>
+					<string>com.dwarfland.d71</string>
 				</array>
 			</dict>
 			<key>NSExtensionPointIdentifier</key>

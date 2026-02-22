@@ -26,6 +26,7 @@
 				<key>LSItemContentTypes</key>
 				<array>
 					<string>com.dwarfland.d64</string>
+					<string>com.dwarfland.d71</string>
 				</array>
 			</dict>
 		</array>
@@ -53,6 +54,23 @@
 					<key>public.filename-extension</key>
 					<array>
 						<string>d64</string>
+					</array>
+				</dict>
+			</dict>
+			<dict>
+				<key>UTTypeIdentifier</key>
+				<string>com.dwarfland.d71</string>
+				<key>UTTypeDescription</key>
+				<string>Commodore 1571 Disk Image</string>
+				<key>UTTypeConformsTo</key>
+				<array>
+					<string>public.data</string>
+				</array>
+				<key>UTTypeTagSpecification</key>
+				<dict>
+					<key>public.filename-extension</key>
+					<array>
+						<string>d71</string>
 					</array>
 				</dict>
 			</dict>
